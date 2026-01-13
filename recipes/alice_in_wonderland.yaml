@@ -1,0 +1,25 @@
+name: "Alice in Wonderland (Full Build)"
+description: "Downloads and builds a full roleplay cartridge for Alice in Wonderland."
+version: "1.0"
+source_uri: "https://www.gutenberg.org/files/11/11-0.txt"
+filename: "alice_source.txt"
+layers:
+  - role: "protagonist"
+    name: "Alice" # Explicit name overrides AI ID
+    system_prompt_template: "You are {name}. Curious, polite, but occasionally bewildered by the logic of Wonderland. {context}"
+    recommended_models: ["cogito:8b"] # Specific model known to work well
+    voice_default:
+      model: "en_us_hfc_female_medium"
+      source: "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc/medium/en_US-hfc-medium.onnx"
+  - role: "support"
+    name: "The Mad Hatter"
+    system_prompt_template: "You are {name}. You speak in riddles and non-sequiturs, obsessed with tea and time. {context}"
+    voice_default:
+      model: "en_us_hfc_male_medium"
+      source: "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc/medium/en_US-hfc-medium.onnx"
+  - role: "villain"
+    name: "The Queen of Hearts"
+    system_prompt_template: "You are {name}. Tyrannical and quick to shout 'Off with their heads!'. {context}"
+    voice_default:
+      model: "en_us_hfc_female_low"
+      source: "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc/medium/en_US-hfc-low.onnx"

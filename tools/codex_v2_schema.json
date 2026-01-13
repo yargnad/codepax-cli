@@ -1,0 +1,202 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "CODEX V2 Manifest",
+    "type": "object",
+    "required": [
+        "spec_version",
+        "meta",
+        "layers"
+    ],
+    "properties": {
+        "spec_version": {
+            "type": "string",
+            "enum": [
+                "2.0"
+            ]
+        },
+        "meta": {
+            "type": "object",
+            "required": [
+                "name",
+                "author"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "author": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string",
+                    "default": "1.0.0"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "provenance": {
+            "type": "object",
+            "required": [
+                "tool",
+                "version",
+                "generated_at"
+            ],
+            "properties": {
+                "tool": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                },
+                "generated_at": {
+                    "type": "string"
+                },
+                "profile": {
+                    "type": "string"
+                },
+                "logic": {
+                    "type": "object",
+                    "properties": {
+                        "ai_model": {
+                            "type": "string"
+                        },
+                        "prompts": {
+                            "type": "array"
+                        }
+                    }
+                }
+            }
+        },
+        "instructions": {
+            "type": "object",
+            "required": [
+                "usage"
+            ],
+            "properties": {
+                "usage": {
+                    "type": "string"
+                },
+                "system_prompt_hint": {
+                    "type": "string"
+                },
+                "layer_logic": {
+                    "type": "string"
+                }
+            }
+        },
+        "sources": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "uri"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "uri": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "default": "text/plain"
+                    },
+                    "hash": {
+                        "type": "string"
+                    },
+                    "content": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Null for Lite, String for Dense"
+                    }
+                }
+            }
+        },
+        "layers": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "type",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "persona",
+                            "analysis",
+                            "visuals"
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "base_model_hint": {
+                        "type": "string",
+                        "description": "General model class hint (e.g. 'mistral', 'llama3', 'any')"
+                    },
+                    "recommended_models": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "description": "Specific recommended model tags (e.g. ['cogito:8b', 'llama3:70b'])"
+                    },
+                    "system_prompt": {
+                        "type": "string"
+                    },
+                    "context_sources": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "voice": {
+                        "type": "object",
+                        "properties": {
+                            "model": {
+                                "type": "string"
+                            },
+                            "source": {
+                                "type": "string",
+                                "format": "uri"
+                            },
+                            "hf_repo": {
+                                "type": "string"
+                            },
+                            "speed": {
+                                "type": "number",
+                                "default": 1.0
+                            },
+                            "pitch": {
+                                "type": "number",
+                                "default": 1.0
+                            }
+                        }
+                    },
+                    "parameters": {
+                        "type": "object"
+                    }
+                }
+            }
+        },
+        "bootstrap_instructions": {
+            "type": "string",
+            "description": "Natural language instructions for an AI to parse this file."
+        }
+    }
+}

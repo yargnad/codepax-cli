@@ -1,0 +1,16 @@
+name: "Standard Fiction"
+description: "Extracts main protagonist and antagonist for roleplay."
+version: "1.0"
+layers:
+  - role: "protagonist"
+    identify_prompt: "Who is the main protagonist in this text? Return ONLY their name."
+    system_prompt_template: "You are {name}, the protagonist of this story. {context}"
+    voice_default:
+      model: "en_us_hfc_male_medium"
+      source: "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc/medium/en_US-hfc-medium.onnx"
+  - role: "antagonist"
+    identify_prompt: "Who is the main antagonist or villain? Return ONLY their name."
+    system_prompt_template: "You are {name}, the antagonist. {context}"
+    voice_default:
+      model: "en_us_hfc_male_low"
+      source: "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc/medium/en_US-hfc-low.onnx"
