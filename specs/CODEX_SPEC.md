@@ -110,4 +110,3 @@ Small JSON recipes (<100KB) that hydrate into full personas.
 ## Example
 
 [examples/sherlock_holmes.codex-lite.json](https://github.com/yargnad/codepax-cli/blob/main/examples/sherlock_holmes.codex-lite.json)
-```
