@@ -111,21 +111,3 @@ Small JSON recipes (<100KB) that hydrate into full personas.
 
 [examples/sherlock_holmes.codex-lite.json](https://github.com/yargnad/codepax-cli/blob/main/examples/sherlock_holmes.codex-lite.json)
 ```
-
-***
-
-**Commit these now:**
-
-```bash
-mkdir -p specs examples
-# Copy the 3 files above
-
-git add .
-git commit -m "feat(specs): publish CODEX v1.0 specs + security model
-- CODEX_SPEC.md (overview)
-- CODEX_LITE_SPEC.md (recipes + immutability)
-- README.md (chatty CLI, quickstart, platforms)
-- Defensive publication complete"
-git tag v1.0-spec
-git push && git push --tags
-```
