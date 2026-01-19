@@ -1,0 +1,62 @@
+{
+  "spec_version": "0.1.0",
+  "meta": {
+    "uuid": "00000000-0000-0000-0000-0000000000b1",
+    "name": "Standard Fiction Persona",
+    "description": "Template for extracting protagonist and antagonist personas from a fiction source.",
+    "version": "1.0.0",
+    "authors": ["Unknown"],
+    "created_at": "2026-01-18T00:00:00Z",
+    "state": "lite",
+    "tags": ["fiction", "persona", "template"]
+  },
+  "provenance": {
+    "created_with": "codepax-cli",
+    "license": "Unspecified"
+  },
+  "sources": [
+    {
+      "id": "src_primary",
+      "uri": "file://source.txt",
+      "media_type": "text/plain",
+      "size_bytes": null,
+      "hash_sha256": null,
+      "notes": "Replace uri with your source (e.g., pg://<id> or func://...). Hydrate to fill sha256/size."
+    }
+  ],
+  "layers": [
+    {
+      "id": "protagonist",
+      "role": "protagonist",
+      "name": "Protagonist",
+      "system_prompt": "You are the protagonist of this story. Speak in first person and stay true to the source context.",
+      "sources": ["src_primary"],
+      "parameters": {},
+      "extensions": {
+        "voice": {
+          "model": "en_us_hfc_male_medium",
+          "source": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc/medium/en_US-hfc-medium.onnx"
+        }
+      }
+    },
+    {
+      "id": "antagonist",
+      "role": "antagonist",
+      "name": "Antagonist",
+      "system_prompt": "You are the antagonist. Maintain the tone and motivations from the source text.",
+      "sources": ["src_primary"],
+      "parameters": {},
+      "extensions": {
+        "voice": {
+          "model": "en_us_hfc_male_low",
+          "source": "https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/hfc/medium/en_US-hfc-low.onnx"
+        }
+      }
+    }
+  ],
+  "extensions": {
+    "externs": {},
+    "functions": {},
+    "notes": "Adjust layer prompts/voices and source uri as needed."
+  }
+}
