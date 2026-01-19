@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import jsonschema
+import requests
 
 try:  # Optional function calling support
     import functiongemma  # type: ignore
@@ -108,6 +109,20 @@ def load_externs(path: Optional[Path]) -> Dict[str, Any]:
             return data if isinstance(data, dict) else {}
     except Exception as exc:  # pragma: no cover - defensive
         print(f"[warn] Failed to load externs from {path}: {exc}")
+        return {}
+
+
+def load_remotes(path: Optional[Path]) -> Dict[str, str]:
+    if not path:
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            if not isinstance(data, dict):
+                raise ValueError("remotes file must map alias -> base_url")
+            return {k: str(v) for k, v in data.items()}
+    except Exception as exc:  # pragma: no cover - defensive
+        print(f"[warn] Failed to load remotes from {path}: {exc}")
         return {}
 
 
@@ -343,6 +358,26 @@ def validate(manifest_path: Path, strict: bool) -> None:
         sys.exit(1)
 
 
+# -------------------- Remote Fetch --------------------
+
+def fetch_codex(package: str, repo: str, remotes_path: Optional[Path], out_path: Optional[Path], fetch_zip: bool) -> None:
+    remotes = load_remotes(remotes_path)
+    if repo not in remotes:
+        raise ValueError(f"repo alias '{repo}' not found in remotes mapping")
+    base = remotes[repo].rstrip("/")
+    ext = ".codex.zip" if fetch_zip else ".codex.json"
+    url = f"{base}/{package}{ext}"
+
+    print(f"[info] fetching {url}...")
+    resp = requests.get(url, timeout=30)
+    resp.raise_for_status()
+
+    target = out_path or Path(f"{package}{ext}")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(resp.content)
+    print(f"[ok] wrote {target}")
+
+
 # -------------------- CLI --------------------
 
 def build_parser() -> argparse.ArgumentParser:
@@ -371,6 +406,13 @@ def build_parser() -> argparse.ArgumentParser:
     p_dehydrate.add_argument("file", help="Path to dense codex.json or codex.zip")
     p_dehydrate.add_argument("--out", help="Output lite codex.json path")
 
+    p_fetch = sub.add_parser("fetch", help="Fetch a CODEX artifact from a remote repo")
+    p_fetch.add_argument("name", help="Package name without extension")
+    p_fetch.add_argument("--repo", required=True, help="Remote alias from remotes mapping")
+    p_fetch.add_argument("--remotes", help="Path to remotes JSON (alias -> base URL)")
+    p_fetch.add_argument("--out", help="Output path (defaults to <name>.codex.json or .zip)")
+    p_fetch.add_argument("--zip", action="store_true", help="Fetch codex.zip instead of codex.json")
+
     return parser
 
 
@@ -397,6 +439,15 @@ def main(argv: Optional[List[str]] = None) -> None:
 
     elif args.command == "dehydrate":
         dehydrate(Path(args.file), Path(args.out) if args.out else None)
+
+    elif args.command == "fetch":
+        fetch_codex(
+            package=args.name,
+            repo=args.repo,
+            remotes_path=Path(args.remotes) if args.remotes else None,
+            out_path=Path(args.out) if args.out else None,
+            fetch_zip=bool(getattr(args, "zip", False)),
+        )
 
     else:
         parser.print_help()
