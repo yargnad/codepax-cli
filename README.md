@@ -21,6 +21,9 @@ python tools/codepax.py dehydrate example.codex.json --out example.lite.codex.js
 # Validate
 python tools/codepax.py validate example.codex.json
 
+# Verify (fetch without inlining, update history)
+python tools/codepax.py verify example.codex.json --externs tools/externs/project_gutenberg.json --cache .codepax_cache --out example.verified.codex.json
+
 # Fetch from a remote repo
 python tools/codepax.py fetch alice_in_wonderland --repo personas_github --remotes tools/remotes.example.json
 ```
@@ -29,16 +32,18 @@ python tools/codepax.py fetch alice_in_wonderland --repo personas_github --remot
 
 - `init` – scaffold a lite manifest.
 - `validate` – schema + hash/size checks (`--relaxed` to warn instead of fail).
-- `hydrate` – fetch/inline sources, set `meta.state=dense`, optionally bundle `--zip` (supports `--externs` and `--functions` for extern resolvers and func:// via functiongemma).
+- `hydrate` – fetch/inline sources, set `meta.state=dense`, optionally bundle `--zip` (supports `--externs`, `--functions`, and optional `--cache` for fetch reuse).
 - `dehydrate` – strip inline content, recompute hashes, set `meta.state=lite`.
 - `fetch` – pull `.codex.json` or `.codex.zip` from a named remote (`--repo`, `--remotes`, optional `--zip`).
+- `verify` – fetch+check sources without inlining; updates modification history/status (supports `--externs`, `--functions`, optional `--cache`, `--out`).
 
 ## Features
 
 - Inline-first CODEX v0.1: `.codex.json` canonical, optional `.codex.zip` transport.
-- Integrity: every source carries `sha256` + `size_bytes`; strict vs relaxed validation.
+- Integrity: every source carries `sha256` + `size_bytes`, with optional `expected_digest` + `modification_status/history` tracking; strict vs relaxed validation.
 - Extern resolvers: map custom schemes (e.g., `pg://123`) via `extensions.externs` or `--externs`.
-- Function calling: hydrate `func://name?...` via functiongemma (default model `functiongemma-270m`) with specs from `extensions.functions` or `--functions`.
+- Function calling: hydrate `func://name?...` via functiongemma (default model `functiongemma-270m`) with specs from `extensions.functions` or `--functions`, validated for shape.
+- Multi-source URIs: `sources[*].uri` can be a string or array; hydrate/verify fetch each and join with newlines before hashing. URI hygiene: `pg://` IDs are normalized to numeric Gutenberg IDs before resolution.
 - Remote fetch: configurable remotes mapping to pull published CODEX artifacts.
 
 ## Pointers

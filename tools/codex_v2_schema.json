@@ -4,6 +4,40 @@
   "type": "object",
   "required": ["spec_version", "uuid", "meta", "sources", "layers"],
   "additionalProperties": true,
+  "definitions": {
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[A-Fa-f0-9]{64}$"
+    },
+    "functionSpec": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": true,
+      "properties": {
+        "name": { "type": "string" },
+        "id": { "type": "string" },
+        "description": { "type": "string" },
+        "model": { "type": "string" },
+        "encoding": { "type": "string" },
+        "mode": { "type": "string" },
+        "parameters": { "type": "object" },
+        "notes": { "type": "string" }
+      }
+    },
+    "modificationHistoryEntry": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "checked_at": { "type": "string", "format": "date-time" },
+        "observed_digest": { "$ref": "#/definitions/digest" },
+        "observed_size": { "type": "integer", "minimum": 0 },
+        "expected_hash": { "$ref": "#/definitions/digest" },
+        "expected_digest": { "$ref": "#/definitions/digest" },
+        "status": { "type": "string", "enum": ["clean", "drifted", "unknown"] },
+        "notes": { "type": "string" }
+      }
+    }
+  },
   "properties": {
     "spec_version": {
       "type": "string",
@@ -76,12 +110,23 @@
         "additionalProperties": true,
         "properties": {
           "id": { "type": "string" },
-          "uri": { "type": "string", "format": "uri" },
+          "uri": {
+            "oneOf": [
+              { "type": "string" },
+              { "type": "array", "items": { "type": "string" } }
+            ]
+          },
           "type": { "type": "string", "default": "text/plain" },
-          "hash": { "type": "string", "pattern": "^sha256:[A-Fa-f0-9]{64}$" },
+          "hash": { "$ref": "#/definitions/digest" },
           "size_bytes": { "type": "integer", "minimum": 0 },
           "content": { "type": ["string", "null"] },
           "encoding": { "type": "string" },
+          "expected_digest": { "$ref": "#/definitions/digest" },
+          "modification_status": { "type": "string", "enum": ["clean", "drifted", "unknown"] },
+          "modification_history": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/modificationHistoryEntry" }
+          },
           "curation": {
             "type": "object",
             "additionalProperties": true,
@@ -154,7 +199,25 @@
     },
     "extensions": {
       "type": "object",
-      "additionalProperties": true
+      "additionalProperties": true,
+      "properties": {
+        "functions": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/definitions/functionSpec" }
+        },
+        "externs": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "template": { "type": "string" },
+              "encoding": { "type": "string" },
+              "headers": { "type": "object" }
+            }
+          }
+        }
+      }
     }
   }
 }

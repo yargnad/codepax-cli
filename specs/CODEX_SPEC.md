@@ -12,18 +12,13 @@ Unified, inline-first manifest for portable text, notes, annotations, personas, 
 
 ## Artifact Forms
 
-- Lite (canonical): .codex.json — manifest with content null/absent; always usable inline by an LLM/tool.
-- Dense (optional): codex.zip — same manifest plus hydrated assets (e.g., large text, audio) placed alongside the manifest for compression only; no extra bootstrap files. When hydrated, meta.state = "dense"; when dehydrated, meta.state = "lite" and content is null.
+ - Multi-source URIs: `sources[*].uri` may be a single string or an array of URIs; hydrate/verify will fetch each in order and join with newlines before hashing.
 
 ## Top-Level Manifest
-
-Required unless noted. Fields not listed are allowed under extensions.*.
-
-- spec_version (string): 0.1.x semver for this spec family.
+ - Hashes: Every sources[*] MUST include hash = sha256:<64 hex> and size_bytes. When content is present, it MUST match the hash/size. When content is null, hydration/verify must fetch, hash, and check.
 - uuid (string, RFC 4122).
 - meta (object):
-  - name (string)
-  - version (string, semver of the content itself)
+ - externs (optional, under extensions.externs): scheme resolvers (template/headers/encoding) for custom URI schemes. Multi-source URIs remain compatible with extern resolution.
   - state (enum: lite, dense)
   - description, category (strings, optional)
   - tags (array of strings, optional)
@@ -32,7 +27,7 @@ Required unless noted. Fields not listed are allowed under extensions.*.
 - instructions (object, optional): usage (string), system_prompt_hint, layer_logic, bootstrap_hint (all optional strings). All bootstrapping stays inline.
 - sources (array): each source is:
   - id (string)
-  - uri (string, URI)
+  - uri (string URI or array of URIs)
   - type (string, default text/plain)
   - hash (string, sha256:<hex64>)
   - size_bytes (integer, ≥0)
@@ -50,11 +45,15 @@ Required unless noted. Fields not listed are allowed under extensions.*.
   - tags (array of strings, optional)
 - history (array, optional): entries with version, date (ISO 8601), action, actor, notes.
 - extensions (object, optional): namespaced sub-objects, e.g., "whetstone": {...}.
+- functions (optional, under extensions.functions): map of function specs keyed by name; each entry must include a name/id and optional description/model/encoding/mode/parameters/notes. CLI validates shape before hydrating func:// URIs.
 
 ## Integrity & Validation
 
-- Hashes: Every sources[*] MUST include hash = sha256:<64 hex> and size_bytes. When content is present, it MUST match the hash/size. When content is null, hydration must fetch, hash, and verify.
+- Hashes: Every sources[*] MUST include hash = sha256:<64 hex> and size_bytes. When content is present, it MUST match the hash/size. When content is null, hydration/verify must fetch, hash, and check.
+- Optional integrity extras: sources may include expected_digest (upstream checksum), modification_status (clean|drifted|unknown), and modification_history[] entries with observed digests/sizes and timestamps. Hydration/validation updates status/history; strict mode still fails on mismatches.
 - Strict vs relaxed: Strict mode fails on any hash/size mismatch or missing required fields; relaxed mode warns but continues.
+- URI helpers: pg:// IDs are normalized to numeric Gutenberg IDs (stripping pg/ebooks/cache prefixes and file suffixes) before resolving against extern templates.
+- Curation/exclusions hygiene: exclusions should be ordered and non-overlapping; tools SHOULD warn on overlaps.
 - Canonical JSON: UTF-8, no BOM. Producers SHOULD emit stable key order when signing, but consumers MUST be order-tolerant.
 - Forward compatibility: Unknown fields outside reserved names MUST be ignored by consumers.
 

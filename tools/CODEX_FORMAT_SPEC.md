@@ -3,23 +3,16 @@
 Unified, inline-first manifest for personas, annotations, and curated text. The canonical artifact is a single JSON file that AIs can parse directly; an optional `codex.zip` is only a compressed wrapper around the same manifest and any hydrated assets.
 
 ## Artifacts
-- **Lite (canonical):** `.codex.json` — manifest with `content` null/absent; always usable inline.
-- **Dense (optional transport):** `codex.zip` — same manifest plus hydrated assets under `content/`; no extra bootstrap files.
+ **Multi-source URIs:** `sources[*].uri` may be a string or array of URIs; hydrate/verify fetch each in order and join with newlines before hashing.
 
-## Manifest Essentials (codex.json)
-- `spec_version`: `0.1.x`
-- `uuid`: RFC 4122
-- `meta`: `name`, `version`, `state` (`lite`|`dense`), optional `description`, `category`, `tags`, `author`, `created_by`, `created_at`, `archived_at`
-- `provenance` (opt): `tool`, `version`, `generated_at`, `profile`, `logic` (`ai_model`, `prompts`, `parameters`)
-- `instructions` (opt): `usage`, `system_prompt_hint`, `layer_logic`, `bootstrap_hint` (all inline)
-- `sources[]`: `id`, `uri`, `type` (default `text/plain`), `hash` (`sha256:<hex64>`), `size_bytes`, `content` (null|string), optional `encoding`, `curation.exclusions[] {start,end,reason,...}`, `notes`
-- `layers[]`: `id`, `name`, `type` (`persona`|`analysis`|`visuals`), optional `system_prompt`, `context_sources`, `parameters`, `voice`, `tags`, `base_model_hint`, `recommended_models`
-- Optional: `history[]` (version/date/action/actor/notes), `extensions` (namespaced project data)
+- Optional: `extensions.functions` as a map of function specs (must include `name`/`id`, optional `description`/`model`/`encoding`/`mode`/`parameters`/`notes`); validated before hydrating `func://` URIs.
 
 ## Integrity
 - Every source must include `hash` = `sha256:<64 hex>` and `size_bytes`.
+- Optional `expected_digest`, `modification_status` (`clean|drifted|unknown`), and `modification_history[]` can track observed checksums/sizes. Hydration/validation updates these and still fails in strict mode on mismatches.
 - If `content` is present, it must match hash/size; if null, hydration must fetch and verify.
 - Strict mode fails on any mismatch; relaxed mode may warn.
+- `pg://` IDs are normalized to numeric Gutenberg IDs (strip pg/ebooks/cache prefixes and file suffixes) before resolution.
 
 ## Lifecycle
 - **Lite → Hydrate:** fetch URIs, verify `sha256`+`size_bytes`, inline `content`, set `meta.state="dense"`, optionally bundle manifest+assets into `codex.zip`.
