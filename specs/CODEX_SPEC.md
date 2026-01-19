@@ -57,6 +57,12 @@ Unified, inline-first manifest for portable text, notes, annotations, personas, 
 - Canonical JSON: UTF-8, no BOM. Producers SHOULD emit stable key order when signing, but consumers MUST be order-tolerant.
 - Forward compatibility: Unknown fields outside reserved names MUST be ignored by consumers.
 
+## Schema discovery
+
+- Add `$schema` at the top level pointing to the public schema so tools/LLMs can self-validate. Recommended value:
+  `"$schema": "https://raw.githubusercontent.com/yargnad/codepax-cli/master/tools/codex_v2_schema.json"`
+- The `$schema` field is optional but strongly recommended for portability.
+
 ## Lifecycle
 
 - Lite → Hydrate: fetch each source, verify sha256 + size_bytes, optionally inline content, optionally write the manifest and assets into codex.zip, set meta.state = "dense".
@@ -66,6 +72,7 @@ Unified, inline-first manifest for portable text, notes, annotations, personas, 
 ## Example (Lite, trimmed)
 
 {
+  "$schema": "https://raw.githubusercontent.com/yargnad/codepax-cli/master/tools/codex_v2_schema.json",
   "spec_version": "0.1.0",
   "uuid": "550e8400-e29b-41d4-a716-446655440000",
   "meta": {

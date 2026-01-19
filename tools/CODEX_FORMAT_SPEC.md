@@ -38,6 +38,7 @@ All bootstrapping guidance stays inline in the manifest.
 
 ## Validation & Schema
 - Authoritative JSON Schema: [codex_v2_schema.json](./codex_v2_schema.json)
+- Recommended `$schema`: `https://raw.githubusercontent.com/yargnad/codepax-cli/master/tools/codex_v2_schema.json` (include in every manifest so tools/LLMs can fetch the shape).
 - Consumers must ignore unknown fields; use `extensions.<namespace>` for project data.
 
 ## License

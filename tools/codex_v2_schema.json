@@ -39,6 +39,10 @@
     }
   },
   "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri"
+    },
     "spec_version": {
       "type": "string",
       "pattern": "^0\\.1\\.\\d+$"
