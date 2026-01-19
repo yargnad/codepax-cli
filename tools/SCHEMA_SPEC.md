@@ -1,8 +1,8 @@
-# PG Clean Metadata Schema v1.0
+# PG Clean Metadata Schema v1.0 (Reference for source curation)
 
 ## Overview
 
-This schema defines a **rich, extensible format** for Project Gutenberg text metadata, designed for:
+This schema remains a reference for describing curated source metadata (exclusions, provenance) that can be embedded under `sources[*].curation` in CODEX manifests.
 - 🤖 **AI reproducibility** (includes prompts, models, parameters)
 - 📦 **Cartridge bundling** (package text + metadata together)
 - 🔌 **Extensibility** (custom fields without breaking compatibility)

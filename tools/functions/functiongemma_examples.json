@@ -1,0 +1,18 @@
+{
+  "pg_fetch": {
+    "name": "pg_fetch",
+    "description": "Fetch Project Gutenberg text by numeric id and return plain text",
+    "model": "functiongemma-270m",
+    "encoding": "utf-8",
+    "mode": "functiongemma",
+    "notes": "Call with func://pg_fetch?id=1342 to hydrate Jane Austen's Pride and Prejudice"
+  },
+  "http_bridge": {
+    "name": "http_bridge",
+    "description": "Generic HTTP fetch via functiongemma wrapper",
+    "model": "functiongemma-270m",
+    "encoding": "utf-8",
+    "mode": "functiongemma",
+    "notes": "Example placeholder for custom adapters"
+  }
+}

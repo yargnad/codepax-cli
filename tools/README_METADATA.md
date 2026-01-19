@@ -1,10 +1,10 @@
-# Project Gutenberg Clean Text Metadata
+# Project Gutenberg Clean Text Metadata (Reference)
 
 **A community-curated dataset of content boundaries for Project Gutenberg texts**
 
 ## What is this?
 
-This repository contains **machine-generated + human-verified metadata** for Project Gutenberg texts, identifying:
+This document describes metadata used when curating Project Gutenberg sources. It remains a reference for exclusions/filters that can be embedded under `sources[*].curation` in CODEX manifests.
 
 - 📍 Where the actual author's work begins and ends
 - 🚫 Sections to exclude (translator notes, editor comments, footnotes)
@@ -102,9 +102,7 @@ clean_parts.append(raw[pos:])
 author_text = ''.join(clean_parts)
 ```
 
-## Methodology
-
-### v3.0 (Current) - Exclusion-Based
+## Methodology (v3 reference)
 
 **Strategy:** Identify what to EXCLUDE, keep everything else
 

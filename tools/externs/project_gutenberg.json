@@ -1,0 +1,8 @@
+{
+  "pg": {
+    "template": "https://www.gutenberg.org/cache/epub/{id}/pg{id}.txt",
+    "encoding": "utf-8",
+    "headers": {},
+    "notes": "Resolves pg://<id> to the canonical plaintext download"
+  }
+}
