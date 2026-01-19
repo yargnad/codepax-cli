@@ -61,6 +61,8 @@ Unified, inline-first manifest for portable text, notes, annotations, personas, 
 
 - Add `$schema` at the top level pointing to the public schema so tools/LLMs can self-validate. Recommended value:
   `"$schema": "https://raw.githubusercontent.com/yargnad/codepax-cli/master/tools/codex_v2_schema.json"`
+- Optional but recommended for AI-only portability: embed a **minimal** schema snippet inline (see example) so an AI that cannot fetch URLs can still understand the shape.
+- For dense `.codex` zips, optionally include `codex.schema.json` alongside `codex.json` so the schema travels with the artifact.
 - The `$schema` field is optional but strongly recommended for portability.
 
 ## Lifecycle
@@ -113,7 +115,23 @@ Unified, inline-first manifest for portable text, notes, annotations, personas, 
     }
   ],
   "extensions": {
-    "whetstone": {"visual_style": "woodcut"}
+    "whetstone": {"visual_style": "woodcut"},
+    "schema_embed": {
+      "required": ["spec_version", "uuid", "meta", "sources", "layers"],
+      "properties": {
+        "meta": {"properties": {"state": {"enum": ["lite", "dense"]}}},
+        "sources": {"items": {"properties": {"id": {"type": "string"}, "uri": {"type": ["string", "array"]}}}}
+      }
+    },
+    "persona": {
+      "$schema": "https://example.com/schemas/codex-persona.schema.json",
+      "schema_embed": {
+        "type": "object",
+        "properties": {"primary_layer": {"type": "string"}},
+        "required": ["primary_layer"]
+      },
+      "primary_layer": "layer_alice"
+    }
   }
 }
 
